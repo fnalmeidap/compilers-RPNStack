@@ -55,24 +55,22 @@ public class RPNStacker{
     }
 
     private void getOperandsOrThrow() {
-    try {
-        if (!stack.isEmpty()) {
-            secondOperand = stack.pop();
-        } else {
-            throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the second operand!");
-        }
+        try {
+            if (!stack.isEmpty()) {
+                secondOperand = stack.pop();
+            } else {
+                throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the second operand!");
+            }
 
-        if (!stack.isEmpty()) {
-            firstOperand = stack.pop();
-        } else {
-            throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the first operand!");
+            if (!stack.isEmpty()) {
+                firstOperand = stack.pop();
+            } else {
+                throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the first operand!");
+            }
+        } catch (Exception except) {
+            System.out.println("Error found in doOperation:" + except);
         }
-    } catch (Exception except) {
-        System.out.println("Error found in doOperation:" + except);
     }
-
-
-}
 
     private int doOperationOrThrow(){
         try {
