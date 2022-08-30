@@ -10,8 +10,16 @@ public class RPNStacker{
     Scanner input;
     Stack<Integer> stack = new Stack<>();
 
+    protected String _filePath = "";
+
+    private int firstOperand = 0;
+    private int secondOperand = 0;
+    private int result = 0;
+    private char operator;
+
     public RPNStacker(String filePath) throws FileNotFoundException, Exception {
         file = new File(filePath);
+        _filePath = filePath;
     }
 
     public void run() {
@@ -21,7 +29,7 @@ public class RPNStacker{
     }
     private void findFileOrThrow() {
         try {
-            this.input = new Scanner(file);
+            input = new Scanner(file);
         } catch (FileNotFoundException error) {
             System.out.println("File not found.\n" + error);
         } catch (Exception exception){
@@ -35,13 +43,10 @@ public class RPNStacker{
                 int number = input.nextInt();
                 stack.push(number);
             } else {
-                char operator = input.next().charAt(0);
-                int firstOperand = 0;
-                int secondOperand = 0;
-                int result = 0;
+                operator = input.next().charAt(0);
 
-                getOperandsOrThrow(stack, secondOperand, firstOperand);
-                result = doOperationOrThrow(operator, firstOperand, secondOperand);
+                getOperandsOrThrow();
+                result = doOperationOrThrow();
 
                 stack.push(result);
             }
@@ -49,8 +54,7 @@ public class RPNStacker{
         input.close();
     }
 
-    private void getOperandsOrThrow(Stack<Integer> stack, int secondOperand, int firstOperand) {
-    // Get second operand, if the stack is not empty
+    private void getOperandsOrThrow() {
     try {
         if (!stack.isEmpty()) {
             secondOperand = stack.pop();
@@ -58,7 +62,6 @@ public class RPNStacker{
             throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the second operand!");
         }
 
-        // Get first operand, if the stack is not empty
         if (!stack.isEmpty()) {
             firstOperand = stack.pop();
         } else {
@@ -71,7 +74,7 @@ public class RPNStacker{
 
 }
 
-    private int doOperationOrThrow(char operator, int firstOperand, int secondOperand){
+    private int doOperationOrThrow(){
         try {
             switch (operator) {
                 case '+':
@@ -94,7 +97,8 @@ public class RPNStacker{
     private void getResultOrThrow() {
         try {
             if (!stack.isEmpty()) {
-                System.out.println("The answer is: " + stack.pop());
+                System.out.println("File read: " + _filePath);
+                System.out.println("Result value: " + stack.pop());
             } else {
                 throw new Exception("Unexpected EMPTY STACK when trying to pop the operation result!");
             }
