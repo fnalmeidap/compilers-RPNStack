@@ -1,3 +1,3 @@
 RPNStack
 
-Felipe Nunes - fnap@cin.ufpe.br
+Felipe Nunes, Engenharia da Computação - fnap@cin.ufpe.br
