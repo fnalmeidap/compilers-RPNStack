@@ -2,19 +2,19 @@ package RPNStacker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
 public class RPNStacker{
     File file;
     Scanner input;
-    Stack<Integer> stack = new Stack<>();
+    static Stack<Integer> stack = new Stack<>();
 
     protected String _filePath = "";
 
-    private int firstOperand = 0;
-    private int secondOperand = 0;
-    private int result = 0;
+    private static int result = 0;
     private char operator;
 
     public RPNStacker(String filePath) throws FileNotFoundException, Exception {
@@ -23,73 +23,104 @@ public class RPNStacker{
     }
 
     public void run() {
-        findFileOrThrow();
         readFileOrThrow();
         getResultOrThrow();
     }
-    private void findFileOrThrow() {
-        try {
-            input = new Scanner(file);
-        } catch (FileNotFoundException error) {
-            System.out.println("File not found.\n" + error);
-        } catch (Exception exception){
-            System.out.println("Exception found in findFile: " + exception);
+
+    public static void printTokens(List<Token> tokens) {
+        for (Token token : tokens) {
+            System.out.println(token);
         }
     }
 
     private void readFileOrThrow() {
+        List<Token> tokens = null;
+
+        try {
+            tokens = getTokens(file);
+            printTokens(tokens);
+        } catch (FileNotFoundException e) {
+            System.out.println("File " + _filePath + " not found!");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (tokens != null) {
+            doTokenCalculationOrThrow(tokens);
+        } else {
+            System.out.println("Stack empty.");
+        }
+    }
+
+    public static List<Token> getTokens(File file) throws FileNotFoundException {
+        List<Token> tokens = new ArrayList<>();
+
+        Scanner input = new Scanner(file);
+
         while (input.hasNext()) {
-            if (input.hasNextInt()) {
-                int number = input.nextInt();
+            String lexeme = input.nextLine().trim();
+            Token token;
+
+            if (lexeme.matches("[0-9]+")) {
+                token = new Token(TokenType.NUM, lexeme);
+            } else if (lexeme.equals("+")) {
+                token = new Token(TokenType.PLUS, lexeme);
+            } else if (lexeme.equals("-")) {
+                token = new Token(TokenType.MINUS, lexeme);
+            } else if (lexeme.equals("*")) {
+                token = new Token(TokenType.STAR, lexeme);
+            } else if (lexeme.equals("/")) {
+                token = new Token(TokenType.SLASH, lexeme);
+            } else {
+                input.close();
+                throw new RuntimeException("Error: Unexpected character `" + lexeme + "`");
+            }
+
+            tokens.add(token);
+        }
+
+        input.close();
+
+        return tokens;
+    }
+
+    private static void doTokenCalculationOrThrow(List<Token> tokens){
+        for (Token token : tokens) {
+            if (token.type == TokenType.NUM) {
+                int number = Integer.parseInt(token.lexeme);
                 stack.push(number);
             } else {
-                operator = input.next().charAt(0);
+                try {
+                    int firstOperand;
+                    int secondOperand;
 
-                getOperandsOrThrow();
-                result = doOperationOrThrow();
+                    if (!stack.isEmpty()) {
+                        secondOperand = stack.pop();
+                    } else {
+                        throw new Exception("Error: EMPTY STACK");
+                    }
+
+                    if (!stack.isEmpty()) {
+                        firstOperand = stack.pop();
+                    } else {
+                        throw new Exception("Error: EMPTY STACK");
+                    }
+
+                    switch (token.type) {
+                        case PLUS -> result = firstOperand + secondOperand;
+                        case MINUS -> result = firstOperand - secondOperand;
+                        case STAR -> result = firstOperand * secondOperand;
+                        case SLASH -> result = firstOperand / secondOperand;
+                        default -> {
+                        }
+                    }
+                } catch (Exception except) {
+                    System.out.println("Exception found: " + except);
+                }
 
                 stack.push(result);
             }
         }
-        input.close();
-    }
-
-    private void getOperandsOrThrow() {
-        try {
-            if (!stack.isEmpty()) {
-                secondOperand = stack.pop();
-            } else {
-                throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the second operand!");
-            }
-
-            if (!stack.isEmpty()) {
-                firstOperand = stack.pop();
-            } else {
-                throw new Exception("Error: Unexpected EMPTY STACK when trying to pop the first operand!");
-            }
-        } catch (Exception except) {
-            System.out.println("Error found in doOperation:" + except);
-        }
-    }
-
-    private int doOperationOrThrow(){
-        try {
-            switch (operator) {
-                case '+':
-                    return firstOperand + secondOperand;
-                case '-':
-                    return firstOperand - secondOperand;
-                case '*':
-                    return firstOperand * secondOperand;
-                case '/':
-                    return firstOperand / secondOperand;
-                default:
-                    throw new Exception("Unexpected Symbol " + operator);
-            }
-        } catch (Exception except){
-            System.out.println("Exception found in doOperation:" + except);
-        }
-        return 1;
     }
 
     private void getResultOrThrow() {
