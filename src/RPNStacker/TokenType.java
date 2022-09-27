@@ -1,3 +1,4 @@
+package RPNStacker;
 /* *******************************************************************
  * Copyright (c) 2021 Universidade Federal de Pernambuco (UFPE).
  *
@@ -13,9 +14,6 @@
  *     Henrique Rebelo      initial design and implementation
  *     http://www.cin.ufpe.br/~hemr/
  * ******************************************************************/
-
-package stacker.rpn.lexer;
-package RPNStacker;
 
 /**
  * @author Henrique Rebelo
