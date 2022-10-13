@@ -35,9 +35,10 @@ public class RPNStacker{
 
     private void readFileOrThrow() {
         List<Token> tokens = null;
+        LexicalScan scanner = new LexicalScan();
 
         try {
-            tokens = getTokens(file);
+            tokens = scanner.getTokens(file);
             printTokens(tokens);
         } catch (FileNotFoundException e) {
             System.out.println("File " + _filePath + " not found!");
@@ -50,38 +51,6 @@ public class RPNStacker{
         } else {
             System.out.println("Stack empty.");
         }
-    }
-
-    public static List<Token> getTokens(File file) throws FileNotFoundException {
-        List<Token> tokens = new ArrayList<>();
-
-        Scanner input = new Scanner(file);
-
-        while (input.hasNext()) {
-            String lexeme = input.nextLine().trim();
-            Token token;
-
-            if (lexeme.matches("[0-9]+")) {
-                token = new Token(TokenType.NUM, lexeme);
-            } else if (lexeme.equals("+")) {
-                token = new Token(TokenType.PLUS, lexeme);
-            } else if (lexeme.equals("-")) {
-                token = new Token(TokenType.MINUS, lexeme);
-            } else if (lexeme.equals("*")) {
-                token = new Token(TokenType.STAR, lexeme);
-            } else if (lexeme.equals("/")) {
-                token = new Token(TokenType.SLASH, lexeme);
-            } else {
-                input.close();
-                throw new RuntimeException("Error: Unexpected character `" + lexeme + "`");
-            }
-
-            tokens.add(token);
-        }
-
-        input.close();
-
-        return tokens;
     }
 
     private static void doTokenCalculationOrThrow(List<Token> tokens){
