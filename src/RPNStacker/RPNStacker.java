@@ -38,7 +38,7 @@ public class RPNStacker{
         LexicalScan scanner = new LexicalScan();
 
         try {
-            tokens = scanner.getTokens(file);
+            tokens = scanner.scan(file);
             printTokens(tokens);
         } catch (FileNotFoundException e) {
             System.out.println("File " + _filePath + " not found!");

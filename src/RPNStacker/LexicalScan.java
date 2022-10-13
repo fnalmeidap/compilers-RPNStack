@@ -7,25 +7,27 @@ import java.util.List;
 import java.util.Scanner;
 
 public class LexicalScan {
-    public static List<Token> getTokens(File file) throws FileNotFoundException {
+    public static List<Token> scan(File file) throws FileNotFoundException {
         List<Token> tokens = new ArrayList<>();
 
         Scanner input = new Scanner(file);
 
         while (input.hasNext()) {
             String lexeme = input.nextLine().trim();
-            Token token;
+            Token token = null;
 
             if (Regex.isNum(lexeme)) {
                 token = new Token(TokenType.NUM, lexeme);
-            } else if (Regex.isPlus(lexeme)) {
-                token = new Token(TokenType.PLUS, lexeme);
-            } else if (Regex.isMinus(lexeme)) {
-                token = new Token(TokenType.MINUS, lexeme);
-            } else if (Regex.isStar(lexeme)) {
-                token = new Token(TokenType.STAR, lexeme);
-            } else if (Regex.isSlash(lexeme)) {
-                token = new Token(TokenType.SLASH, lexeme);
+            } else if (Regex.isOP(lexeme)) {
+                if (Regex.isPlus(lexeme)) {
+                    token = new Token(TokenType.PLUS, lexeme);
+                } else if (Regex.isMinus(lexeme)) {
+                    token = new Token(TokenType.MINUS, lexeme);
+                } else if (Regex.isStar(lexeme)) {
+                    token = new Token(TokenType.STAR, lexeme);
+                } else if (Regex.isSlash(lexeme)) {
+                    token = new Token(TokenType.SLASH, lexeme);
+                }
             } else {
                 input.close();
                 throw new RuntimeException("Error: Unexpected character `" + lexeme + "`");
